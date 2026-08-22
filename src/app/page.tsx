@@ -14,9 +14,10 @@ import OrdersPage from "./orders-page";
 import StorefrontPage from "./storefront-page";
 import FinancePage from "./finance-page";
 import AdsPage from "./ads-page";
-import { LayoutDashboard, Package, ShoppingCart, Store, Wallet, Megaphone, Settings, LogOut, Menu, X, Moon, Sun, Languages, Share2, Download, Copy, Check } from "lucide-react";
+import WahaPage from "./waha-page";
+import { LayoutDashboard, Package, ShoppingCart, Store, Wallet, Megaphone, Settings, LogOut, Menu, X, Moon, Sun, Languages, Share2, Download, Copy, Check, MessageCircle } from "lucide-react";
 
-type Tab = "dashboard" | "products" | "orders" | "storefront" | "finance" | "ads" | "settings";
+type Tab = "dashboard" | "products" | "orders" | "storefront" | "finance" | "ads" | "waha" | "settings";
 
 function AuthView(){
   const { login, register, lang, setLang } = useApp();
@@ -168,6 +169,7 @@ export default function Home(){
     { id:"storefront", label: t("storefront"), icon: Store },
     { id:"finance", label: t("finance"), icon: Wallet },
     { id:"ads", label: t("ads"), icon: Megaphone },
+    { id:"waha", label: "WhatsApp", icon: MessageCircle },
     { id:"settings", label: t("settings"), icon: Settings },
   ];
 
@@ -216,6 +218,7 @@ export default function Home(){
           {tab==="storefront" && <StorefrontPage />}
           {tab==="finance" && <FinancePage />}
           {tab==="ads" && <AdsPage />}
+          {tab==="waha" && <WahaPage />}
           {tab==="settings" && <SettingsPage />}
         </main>
         <footer className="border-t border-[hsl(var(--border))] px-6 py-3 text-center text-xs text-[hsl(var(--muted-foreground))]">© 2026 Warung Rosari Commerce OS • warungrosari.zwart.my.id • Built for Indonesian MSMEs</footer>

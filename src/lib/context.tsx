@@ -13,11 +13,15 @@ type AppState = {
   ads: AdsSource[];
   lang: Lang;
   darkMode: boolean;
+  wahaUrl: string;
+  wahaStatus: string;
   login: (email: string, password: string) => boolean;
   register: (name: string, email: string, password: string) => boolean;
   logout: () => void;
   setLang: (l: Lang) => void;
   setDarkMode: (v: boolean) => void;
+  setWahaUrl: (v: string) => void;
+  setWahaStatus: (v: string) => void;
   addProduct: (p: Product) => void;
   updateProduct: (id: string, p: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
@@ -40,6 +44,8 @@ const LS_JOURNALS = "wr_journals";
 const LS_ADS = "wr_ads";
 const LS_LANG = "wr_lang";
 const LS_DARK = "wr_dark";
+const LS_WAHA_URL = "wr_waha_url";
+const LS_WAHA_STATUS = "wr_waha_status";
 
 function getStoredUsers(): User[] {
   if (typeof window === "undefined") return [DEFAULT_USER];
@@ -82,6 +88,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   ]);
   const [lang, setLangState] = useState<Lang>("id");
   const [darkMode, setDarkModeState] = useState(false);
+  const [wahaUrl, setWahaUrlState] = useState<string>(process.env.NEXT_PUBLIC_WAHA_URL || "https://waha.example.com");
+  const [wahaStatus, setWahaStatusState] = useState<string>("STOPPED");
   const [hydrated, setHydrated] = useState(false);
 
   // Hydrate from localStorage
@@ -107,6 +115,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (l === "en" || l === "id") setLangState(l);
       const d = localStorage.getItem(LS_DARK);
       if (d) setDarkModeState(d === "true");
+      const wu = localStorage.getItem(LS_WAHA_URL);
+      if (wu) setWahaUrlState(wu);
+      const ws = localStorage.getItem(LS_WAHA_STATUS);
+      if (ws) setWahaStatusState(ws);
     } catch {}
     setHydrated(true);
   }, []);
@@ -164,6 +176,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     else document.documentElement.classList.remove("dark");
   }, [darkMode, hydrated]);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(LS_WAHA_URL, wahaUrl);
+  }, [wahaUrl, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(LS_WAHA_STATUS, wahaStatus);
+  }, [wahaStatus, hydrated]);
+
   const login = useCallback((email: string, password: string) => {
     const all = getStoredUsers();
     // ensure state users includes stored
@@ -199,6 +221,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setLang = useCallback((l: Lang) => setLangState(l), []);
   const setDarkMode = useCallback((v: boolean) => setDarkModeState(v), []);
+  const setWahaUrl = useCallback((v: string) => setWahaUrlState(v), []);
+  const setWahaStatus = useCallback((v: string) => setWahaStatusState(v), []);
 
   const addProduct = useCallback((p: Product) => setProducts((prev) => [p, ...prev]), []);
   const updateProduct = useCallback((id: string, patch: Partial<Product>) => setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p))), []);
@@ -234,12 +258,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const deleteAds = useCallback((id: string) => setAds((prev) => prev.filter((a) => a.id !== id)), []);
 
   const value = useMemo<AppState>(() => ({
-    user, users, products, orders, journals, ads, lang, darkMode,
-    login, register, logout, setLang, setDarkMode,
+    user, users, products, orders, journals, ads, lang, darkMode, wahaUrl, wahaStatus,
+    login, register, logout, setLang, setDarkMode, setWahaUrl, setWahaStatus,
     addProduct, updateProduct, deleteProduct,
     addOrder, updateOrderStatus, deleteOrder,
     addJournal, addAds, updateAds, deleteAds,
-  }), [user, users, products, orders, journals, ads, lang, darkMode, login, register, logout, setLang, setDarkMode, addProduct, updateProduct, deleteProduct, addOrder, updateOrderStatus, deleteOrder, addJournal, addAds, updateAds, deleteAds]);
+  }), [user, users, products, orders, journals, ads, lang, darkMode, wahaUrl, wahaStatus, login, register, logout, setLang, setDarkMode, setWahaUrl, setWahaStatus, addProduct, updateProduct, deleteProduct, addOrder, updateOrderStatus, deleteOrder, addJournal, addAds, updateAds, deleteAds]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
