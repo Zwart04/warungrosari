@@ -42,7 +42,7 @@ export default function StorefrontPage(){
     const newOrder = { id: Math.random().toString(36).slice(2,9), customerName: "Guest (via Storefront)", customerPhone: "628000000000", customerAddress: "Via WhatsApp Checkout", productIds: ids, quantities: quants, total: orderTotal, status: "pending" as const, createdAt: new Date().toISOString().slice(0,10), note: "From storefront wa.me checkout" };
     addOrder(newOrder as any);
     const lines = cartItems.map(({p,qty})=> `- ${p.name} x${qty} = ${fmt(p.price*qty)}`).join("\n");
-    const msg = `Halo Warung Rosari! Saya mau pesan:\n${lines}\n\nTotal: ${fmt(total)}\nMohon konfirmasi ya 🙏`;
+    const msg = `Halo Warung Rosari! Saya mau pesan:\n${lines}\n\nTotal: ${fmt(total)}\nMohon konfirmasi ya`;
     const wa = `https://wa.me/6281234567890?text=${encodeURIComponent(msg)}`;
     window.open(wa,"_blank");
     clear();
